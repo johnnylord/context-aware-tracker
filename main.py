@@ -6,7 +6,6 @@ import time
 
 import cv2
 import numpy as np
-from scipy.ndimage import gaussian_filter
 
 from tracker import get_tracker_cls
 from multimedia.container.msv import MultiStreamVideo
@@ -20,9 +19,6 @@ from utils.display import (
 def main(args):
     # Load video
     video = MultiStreamVideo(args['video'])
-
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    writer = cv2.VideoWriter("output.mp4", fourcc, video.fps, (video.width, video.height))
 
     # Create track accumulator
     ta = TrackAccumulator(output_dir=args['output'])
@@ -90,20 +86,17 @@ def main(args):
                         fontScale=2)
                 draw_gaussian(depth_frame, mean[:2], covar[:2, :2], color=color)
         # Draw processing time
-        if args['verbose']:
-            text = f"Frame: {fid}"
-            text += f"\nSpeed: {tracker.fps} (fps)"
-            draw_text(video_frame, text, (0, 0),
+        text = f"Frame: {fid}, Speed: {tracker.fps} (fps)"
+        draw_text(video_frame, text, (0, 0),
+                fgcolor=(255, 255, 255),
+                bgcolor=(0, 0, 255),
+                fontScale=3, margin=10)
+        if args['tracker'] == 'CAT':
+            draw_text(depth_frame, text, (0, 0),
                     fgcolor=(255, 255, 255),
                     bgcolor=(0, 0, 255),
                     fontScale=3, margin=10)
-            if args['tracker'] == 'CAT':
-                draw_text(depth_frame, text, (0, 0),
-                        fgcolor=(255, 255, 255),
-                        bgcolor=(0, 0, 255),
-                        fontScale=3, margin=10)
         # Display on screen
-        writer.write(video_frame)
         cv2.imshow('video', video_frame)
         if args['tracker'] == 'CAT':
             cv2.imshow('depth', depth_frame)
@@ -132,7 +125,6 @@ def main(args):
     # Close resources
     cv2.destroyAllWindows()
     video.close()
-    writer.release()
 
 
 if __name__ == "__main__":
