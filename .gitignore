@@ -1,0 +1,7 @@
+.ipynb_checkpoints/
+__pycache__/
+
+run/*
+result/*
+resource/*
+!/**/.gitkeep
