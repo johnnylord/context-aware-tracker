@@ -135,7 +135,8 @@ class CAT(MSVTracker):
         pairs, tracks, observations = self._matching_cascade_time(lost_tracks,
                                                                 observations,
                                                                 mode='cos',
-                                                                threshold=0.4)
+                                                                threshold=0.4,
+                                                                use_orient_pool=True)
         match_pairs.extend(pairs)
         unmatch_tracks.extend(tracks)
 
@@ -187,26 +188,6 @@ class CAT(MSVTracker):
         tracks = [ t.content for t in self.tracks if t.state == TrackState.TRACKED ]
         return frames, tracks
 
-    def _matching_cascade_depth(self, tracks, observations, mode='cos', threshold=0.4, **kwargs):
-        all_pairs = []
-        all_tracks = []
-        # Perform matching cascade association with respect to depth
-        for depth_range in self.depth_ranges:
-            depth_start, depth_end = depth_range
-            depth_tracks = [ t
-                            for t in tracks
-                            if depth_start <= t.content['depth'] < depth_end ]
-            if len(depth_tracks) == 0:
-                continue
-            pairs, umtracks, observations = self._matching_cascade_time(depth_tracks,
-                                                                        observations,
-                                                                        mode=mode,
-                                                                        threshold=threshold,
-                                                                        **kwargs)
-            all_pairs.extend(pairs)
-            all_tracks.extend(umtracks)
-        return all_pairs, all_tracks, observations
-
     def _matching_cascade_time(self, tracks, observations, mode='cos', threshold=0.4, **kwargs):
         all_pairs = []
         all_tracks = []
@@ -229,7 +210,6 @@ class CAT(MSVTracker):
                 observations,
                 mode='cos',
                 threshold=0.4,
-                n_degrees=3,
                 use_orient_pool=False):
         """Perfrom tracking association"""
         if len(tracks) == 0 and len(observations) != 0:
@@ -248,15 +228,19 @@ class CAT(MSVTracker):
         if mode == 'iou':
             cost_mat = np.array([ t.iou_dist(dboxes) for t in tracks ])
         elif mode == 'cos':
-            cost_mat = np.array([ t.cos_dist(features, angles) for t in tracks ])
+            cost_mat = np.array([ t.cos_dist(features, angles,
+                                            use_orient_pool=use_orient_pool)
+                                for t in tracks ])
         elif mode == 'maha_iou':
             prob_iou = 1 - np.array([ t.iou_dist(dboxes) for t in tracks ])
-            prob_maha = np.array([ -t.square_maha_dist(dboxes, n_degrees=n_degrees) for t in tracks ])
+            prob_maha = np.array([ -t.square_maha_dist(dboxes, n_degrees=3) for t in tracks ])
             prob_maha = np.array([ softmax(row) for row in prob_maha ])
             cost_mat = 1 - prob_iou * prob_maha
         elif mode == 'maha_cos':
-            prob_cos = 1 - np.array([ t.cos_dist(features, angles) for t in tracks ])
-            prob_maha = np.array([ -t.square_maha_dist(dboxes, n_degrees=n_degrees) for t in tracks ])
+            prob_cos = 1 - np.array([ t.cos_dist(features, angles,
+                                            use_orient_pool=use_orient_pool)
+                                    for t in tracks ])
+            prob_maha = np.array([ -t.square_maha_dist(dboxes, n_degrees=3) for t in tracks ])
             prob_maha = np.array([ softmax(row) for row in prob_maha ])
             cost_mat = 1 - prob_cos * prob_maha
 
