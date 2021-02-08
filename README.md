@@ -2,7 +2,7 @@
 
 Context-aware tracker (CAT) is a multiple object tracker (MOT) extending tracking scenario from 2D space to 3D space, and using body orientation to maintain stable and discriminative feature presentation of each object. Without further ado, CAT can track objects really well even when **objects are occluded by others or have similar appearance**.  
 
-[![example.png](https://i.imgur.com/nWQPFh9.png)](https://www.youtube.com/watch?v=QA1_ft5JmS4)
+[![example.png](https://i.imgur.com/SkPezTH.png)](https://www.youtube.com/watch?v=Vz7h-lxVEfc)
 
 ## Download NTU-MOTD Dataset
 - Download RGB videos and depth maps with semantic labels (bounding box, body keypoints, object mask)
