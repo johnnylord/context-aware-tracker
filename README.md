@@ -42,6 +42,13 @@ $ python script/mot2deval.py --gt resource/groundtruth/ --pred result/cat
 ```
 
 ## Experiment Result
+- Overall
+```
+            IDF1   IDP   IDR  Rcll   Prcn GT MT PT ML  FP   FN IDs   FM  MOTA  MOTP IDt IDa IDm
+SORT        37.9% 38.9% 36.9% 94.0% 99.1% 64 63  1  0 251 1782 415  459 91.7% 0.007  25 371   0
+DeepSORT    75.7% 75.7% 75.6% 96.5% 97.0% 64 63  1  0 897 1023 128  260 93.1% 0.024  78  32   2
+CAT         82.0% 81.8% 82.0% 97.3% 97.3% 64 64  0  0 791  803  60  213 94.4% 0.033  31  24   0
+```
 - **SORT Tracker**
 ```
                  IDF1   IDP   IDR  Rcll   Prcn GT MT PT ML  FP   FN IDs   FM  MOTA  MOTP IDt IDa IDm
