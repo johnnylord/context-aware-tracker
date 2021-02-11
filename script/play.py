@@ -158,9 +158,6 @@ def main(args):
                             for stream_name, config in MultiStreamVideo.STREAMS.items()
                             if config['importable'] ])
 
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    writer = cv2.VideoWriter("output.mp4", fourcc, video.fps, (video.width, video.height))
-
     # Create display window
     color_winname = "MSVPlayer-RGB"
     cv2.namedWindow(color_winname, cv2.WINDOW_GUI_EXPANDED)
@@ -181,6 +178,7 @@ def main(args):
         segmentation_service = object_segmentation_pb2_grpc.SegmentationStub(segmentation_channel)
 
         # Display video
+        pause = False
         while True:
             start_time = time.time()
             frames = video.read()
@@ -227,10 +225,10 @@ def main(args):
                     draw_bodypose25(video_frame, keypoints=keypoints, thickness=5)
                     # Plot pose orientation
                     angle, conf = get_angle_2d(keypoints)
-                    text = "Angle:{:.2f}({:.2f})".format(angle, conf)
+                    text = "Angle:{:.2f}".format(angle)
                     draw_text(video_frame, text,
                             position=(int(bbox[0]), int(bbox[1])),
-                            fontScale=2,
+                            fontScale=1.5,
                             fgcolor=(255, 255, 255))
                 if depth_frame is not None:
                     draw_bbox(depth_frame, bbox, thickness=5)
@@ -239,11 +237,10 @@ def main(args):
                         draw_bodypose25(depth_frame, keypoints=keypoints, thickness=5)
                         draw_text(depth_frame, text,
                                 position=(int(bbox[0]), int(bbox[1])),
-                                fontScale=2,
+                                fontScale=1.5,
                                 fgcolor=(255, 255, 255))
 
             # Visualize frame
-            writer.write(video_frame)
             cv2.imshow(color_winname, video_frame)
             if depth_frame is not None:
                 cv2.imshow(depth_winname, depth_frame)
@@ -253,6 +250,18 @@ def main(args):
             wait_time = wait_time if wait_time >= 0 else 1
             key = cv2.waitKey(wait_time) & 0xFF
             # Keyboard handling
+            if key == ord('q'):
+                break
+            elif key == 32:
+                pause = not pause
+
+            while pause:
+                key = cv2.waitKey(wait_time) & 0xFF
+                if key == ord('q'):
+                    break
+                elif key == 32:
+                    pause = not pause
+
             if key == ord('q'):
                 break
 
@@ -268,7 +277,6 @@ def main(args):
 
     cv2.destroyAllWindows()
     video.close()
-    writer.release()
 
 
 if __name__ == "__main__":
