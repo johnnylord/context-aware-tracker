@@ -1,8 +1,12 @@
 import time
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.patches import Ellipse
+import matplotlib.transforms as transforms
 from scipy.optimize import linear_sum_assignment
 
+from utils.display import get_color
 from track.base import TrackState, TrackAction
 from track.utils.kalman2d import chi2inv95
 from track.deepsort import DeepTrack
@@ -16,8 +20,16 @@ __all__ = [ "DeepSORT" ]
 class DeepSORT(MSVTracker):
     """Tracker that can handle video file of type 'msv'"""
 
-    def __init__(self, **kwargs):
+    def __init__(self, max_depth=4, n_depth_levels=5, **kwargs):
         super().__init__(**kwargs)
+        # Virtual depth
+        self.max_depth = max_depth
+        self.n_depth_levels = n_depth_levels
+        # birdeye_view
+        fig, axe = plt.subplots(figsize=(16, 8))
+        self.fig = fig
+        self.axe = axe
+
         self.tracks = []
         self.counter = 0
 
@@ -173,3 +185,62 @@ class DeepSORT(MSVTracker):
         unmatch_observations = [ observations[i] for i in unmatch_oindices ]
 
         return pairs, unmatch_tracks, np.array(unmatch_observations)
+
+    @property
+    def bird_view(self):
+        """Generate birdeye view of tracked tracks"""
+        width = self.video.width
+        height = self.video.height
+        for track in self.tracks:
+            if track.state == TrackState.TENTATIVE:
+                continue
+            content = track.content
+            bbox = content['bbox']
+            xy = content['mean'][:2]
+            std = np.sqrt(content['covar'][:2, :2])
+
+            # Plotting metadata
+            text = f"ID:{content['id']}"
+            text += f"\nPriority: {track.priority}"
+            color = (np.array(get_color(content['id']))/255).tolist()
+            color = tuple(color[::-1])
+            # Plot confidence distribution
+            mean_x = xy[0]
+            mean_z = 2
+            depth = mean_z
+            scale_x = std[0, 0]*3
+            scale_z = 0.1*3
+            ellipse = Ellipse((0, 0), width=2, height=2, facecolor=color, alpha=0.4)
+            transf = transforms.Affine2D() \
+                        .rotate_deg(45) \
+                        .scale(scale_x, scale_z) \
+                        .translate(mean_x, mean_z)
+            ellipse.set_transform(transf+self.axe.transData)
+            self.axe.add_patch(ellipse)
+            # Plot horizantol bar
+            bar_x = np.linspace(bbox[0], bbox[2])
+            bar_y = np.ones_like(bar_x)*depth
+            self.axe.plot(bar_x, bar_y, color=color, lw=5, alpha=0.6)
+            # Plot end points
+            self.axe.scatter(bbox[0], depth, s=100, color=color)
+            self.axe.scatter(bbox[2], depth, s=100, color=color)
+            # Plot text
+            self.axe.text((bbox[0]+bbox[2])/2, depth, s=text,
+                        ha='center', va='center',
+                        fontsize=14, fontweight='bold',
+                        color='white', bbox=dict(facecolor=color))
+        # Convert matplot canvas to numpy frame
+        self.axe.set_xlabel("Position (pixel)")
+        self.axe.set_ylabel("Depth (meter)")
+        self.axe.set_xticks(np.linspace(0, width, 10))
+        self.axe.set_yticks(np.linspace(0, self.max_depth, self.n_depth_levels))
+        self.axe.set_xlim(0, width)
+        self.axe.set_ylim(0, self.max_depth)
+        self.axe.grid(which='minor', lw=3, alpha=0.3)
+        self.axe.grid(which='major', lw=3, alpha=0.5)
+        self.fig.canvas.draw()
+        img = np.fromstring(self.fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
+        img = img.reshape(self.fig.canvas.get_width_height()[::-1]+(3,))
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        self.axe.clear()
+        return img

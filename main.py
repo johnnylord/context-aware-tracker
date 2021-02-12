@@ -34,8 +34,8 @@ def main(args):
     cv2.namedWindow('video', cv2.WINDOW_GUI_EXPANDED)
     if args['tracker'] == 'CAT':
         cv2.namedWindow('depth', cv2.WINDOW_GUI_EXPANDED)
-        if args['birdeye']:
-            cv2.namedWindow('birdeye', cv2.WINDOW_GUI_EXPANDED)
+    if args['birdeye']:
+        cv2.namedWindow('birdeye', cv2.WINDOW_GUI_EXPANDED)
 
     pause = False
     for fid, (frames, tracks) in enumerate(tracker):
@@ -86,22 +86,23 @@ def main(args):
                         fontScale=2)
                 draw_gaussian(depth_frame, mean[:2], covar[:2, :2], color=color)
         # Draw processing time
-        text = f"Frame: {fid}, Speed: {tracker.fps} (fps)"
-        draw_text(video_frame, text, (0, 0),
-                fgcolor=(255, 255, 255),
-                bgcolor=(0, 0, 255),
-                fontScale=3, margin=10)
-        if args['tracker'] == 'CAT':
-            draw_text(depth_frame, text, (0, 0),
-                    fgcolor=(255, 255, 255),
-                    bgcolor=(0, 0, 255),
-                    fontScale=3, margin=10)
+        # text = f"Frame: {fid}, Speed: {tracker.fps} (fps)"
+        # draw_text(video_frame, text, (0, 0),
+                # fgcolor=(255, 255, 255),
+                # bgcolor=(0, 0, 255),
+                # fontScale=3, margin=10)
+        # if args['tracker'] == 'CAT':
+            # draw_text(depth_frame, text, (0, 0),
+                    # fgcolor=(255, 255, 255),
+                    # bgcolor=(0, 0, 255),
+                    # fontScale=3, margin=10)
         # Display on screen
         cv2.imshow('video', video_frame)
         if args['tracker'] == 'CAT':
             cv2.imshow('depth', depth_frame)
-            if args['birdeye']:
-                cv2.imshow('birdeye', tracker.bird_view)
+
+        if args['birdeye']:
+            cv2.imshow('birdeye', tracker.bird_view)
         # Waiting time to approximate precise fps
         wait_time = int((1/video.fps-1/tracker.fps)*1000)
         wait_time = wait_time if wait_time > 0 else 1
