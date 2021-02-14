@@ -141,10 +141,10 @@ class CAT(MSVTracker):
         unmatch_tracks.extend(tracks)
 
         # Perform association on visible tentative tracks
-        pairs, tracks, observations = self._matching_cascade_time(tentative_tracks,
-                                                                observations,
-                                                                mode='maha_iou',
-                                                                threshold=0.5)
+        pairs, tracks, observations = self._associate(tentative_tracks,
+                                                    observations,
+                                                    mode='maha_iou',
+                                                    threshold=0.5)
         match_pairs.extend(pairs)
         unmatch_tracks.extend(tracks)
 
