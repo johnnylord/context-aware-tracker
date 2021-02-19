@@ -60,7 +60,7 @@ pycparser==2.20
 Pygments==2.7.3
 pynvim==0.4.2
 pyparsing==2.4.7
-pyrealsense2 @ file:///home/johnnylord/Downloads/pyrealsense2-2.41.0.2666-cp37-cp37m-manylinux1_x86_64.whl
+pyrealsense2
 pyrsistent==0.17.3
 python-dateutil==2.8.1
 pytz==2020.5
