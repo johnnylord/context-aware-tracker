@@ -3,5 +3,12 @@ __pycache__/
 
 run/*
 result/*
+!result/UMA
+!result/JDE
+!result/DeepMOT
+!result/SORT
+!result/DeepSORT
+!result/CAT
+*.pkl
 resource/*
 !/**/.gitkeep
