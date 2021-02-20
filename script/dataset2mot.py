@@ -108,7 +108,6 @@ def main(args):
     for idx, (video_path, bodyposes_path, gt_path) in enumerate(triplets):
         name = "MOT17-%02d" % (idx+1)
         print("'{}':'{}'".format(name, osp.basename(osp.dirname(video_path))))
-        continue
         target_video_dir = osp.join(output_video_dir, name)
         target_label_dir = osp.join(output_label_dir, name)
 
