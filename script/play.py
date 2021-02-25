@@ -214,8 +214,8 @@ def main(args):
                 area = (bbox[2]-bbox[0])*(bbox[3]-bbox[1])
                 if area < 68100 or area > 543000:
                     continue
-                draw_bbox(video_frame, bbox, thickness=5)
                 if args['verbose']:
+                    draw_bbox(video_frame, bbox, thickness=5)
                     # Plot mask on video frame
                     mask = pose['mask']
                     mask = get_color_mask(mask)
@@ -231,8 +231,8 @@ def main(args):
                             fontScale=1.5,
                             fgcolor=(255, 255, 255))
                 if depth_frame is not None:
-                    draw_bbox(depth_frame, bbox, thickness=5)
                     if args['verbose']:
+                        draw_bbox(depth_frame, bbox, thickness=5)
                         draw_mask(depth_frame, bbox, mask)
                         draw_bodypose25(depth_frame, keypoints=keypoints, thickness=5)
                         draw_text(depth_frame, text,
