@@ -9,6 +9,10 @@ result/*
 !result/SORT
 !result/DeepSORT
 !result/CAT
+!result/CAT_BIAS
+!result/CAT_WO_BOTH
+!result/CAT_WO_DEPTH
+!result/CAT_WO_ORIENT
 *.pkl
 resource/*
 !/**/.gitkeep
