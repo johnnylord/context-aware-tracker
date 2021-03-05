@@ -233,20 +233,20 @@ class CAT(MSVTracker):
                                 for t in tracks ])
         elif mode == 'maha_iou':
             prob_iou = 1 - np.array([ t.iou_dist(dboxes) for t in tracks ])
-            prob_maha = np.array([ -t.square_maha_dist(dboxes, n_degrees=2) for t in tracks ])
+            prob_maha = np.array([ -t.square_maha_dist(dboxes, n_degrees=3) for t in tracks ])
             prob_maha = np.array([ softmax(row) for row in prob_maha ])
             cost_mat = 1 - prob_iou * prob_maha
         elif mode == 'maha_cos':
             prob_cos = 1 - np.array([ t.cos_dist(features, angles,
                                             use_orient_pool=use_orient_pool)
                                     for t in tracks ])
-            prob_maha = np.array([ -t.square_maha_dist(dboxes, n_degrees=2) for t in tracks ])
+            prob_maha = np.array([ -t.square_maha_dist(dboxes, n_degrees=3) for t in tracks ])
             prob_maha = np.array([ softmax(row) for row in prob_maha ])
             cost_mat = 1 - prob_cos * prob_maha
 
         # Filter out impossible entry
-        mask_mat = np.array([ t.square_maha_dist(dboxes, n_degrees=2) for t in tracks ])
-        cost_mat[mask_mat > chi2inv95[2]] = 10000
+        mask_mat = np.array([ t.square_maha_dist(dboxes, n_degrees=3) for t in tracks ])
+        cost_mat[mask_mat > chi2inv95[3]] = 10000
 
         # Perform greedy matching algorithm
         tindices, oindices = linear_sum_assignment(cost_mat)
