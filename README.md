@@ -37,8 +37,15 @@ $ python main.py \
 ### 3. Evaluate with MOT2D metric
 ```bash
 # Process all video at once
-$ python run.py --input resource/dataset --output result/cat --tracker CAT
-$ python script/mot2deval.py --gt resource/groundtruth/ --pred result/cat
+$ python run.py --input resource/dataset --output result/CAT --tracker CAT
+$ python script/mot2deval.py --gt resource/groundtruth/ --pred result/CAT
+
+# Run following commands to reproduce other trackers evaluation result (precomputed version)
+# $ python script/mot2deval.py --gt resource/groundtruth/ --pred result/UMA
+# $ python script/mot2deval.py --gt resource/groundtruth/ --pred result/JDE
+# $ python script/mot2deval.py --gt resource/groundtruth/ --pred result/DeepMOT
+# $ python script/mot2deval.py --gt resource/groundtruth/ --pred result/SORT
+# $ python script/mot2deval.py --gt resource/groundtruth/ --pred result/DeepSORT
 ```
 
 ## Experiment Result
@@ -62,9 +69,11 @@ CAT             84.6% 84.4% 84.5% 97.3% 97.4% 64 64  0  0 766 794  54  216 94.5%
 ```
 - Ablation Study (Affinity Measurement Method BIAS on appearance)
 ```
-            IDF1   IDP   IDR  Rcll   Prcn GT MT PT ML  FP  FN IDs   FM  MOTA  MOTP IDt IDa IDm
-CAT(BIAS)   85.9% 85.8% 85.9% 97.3% 97.4% 64 64  0  0 777 804  56  218 94.5% 0.034  25  22   0
-CAT         84.6% 84.4% 84.5% 97.3% 97.4% 64 64  0  0 766 794  54  216 94.5% 0.034  26  22   0
+                IDF1   IDP   IDR  Rcll   Prcn GT MT PT ML  FP  FN IDs   FM  MOTA  MOTP IDt IDa IDm
+CAT(w/o D)(B)   76.5% 76.4% 76.4% 96.7% 97.0% 64 63  1  0 873 974 122  263 93.3% 0.035  73  35   2
+CAT(w/o D)      79.4% 79.3% 79.3% 97.0% 97.2% 64 64  0  0 832 899 104  250 93.8% 0.034  63  28   2
+CAT(B)          85.9% 85.8% 85.9% 97.3% 97.4% 64 64  0  0 777 804  56  218 94.5% 0.034  25  22   0
+CAT             84.6% 84.4% 84.5% 97.3% 97.4% 64 64  0  0 766 794  54  216 94.5% 0.034  26  22   0
 ```
 - **CAT Tracker**
 ```
