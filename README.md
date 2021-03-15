@@ -1,11 +1,11 @@
-# Context-Aware Multiple Object Tracking with Dynamic Matching Strategy
+# Context-Aware Multiple Object Tracking with a Dynamic Matching Strategy
 
 Context-aware tracker (CAT) is a multiple object tracker (MOT) extending tracking scenario from 2D space to 3D space, and using body orientation to maintain stable and discriminative feature presentation of each object. Without further ado, CAT can track objects really well even when **objects are occluded by others or have similar appearance**.  
 
 [![example.png](https://i.imgur.com/SkPezTH.png)](https://www.youtube.com/watch?v=Vz7h-lxVEfc)
 
 ## Download NTU-MOTD Dataset
-- Download RGB videos and depth maps with semantic labels (bounding box, body keypoints, object mask)
+- Download RGB videos and depth maps with semantic labels (bounding boxes, body keypoints, object masks)
 ```bash
 $ cd resource/
 $ wget -O dataset.tar.gz https://www.dropbox.com/s/5q1ep3bo5wn5uvr/dataset.tar.gz?dl=1
@@ -18,7 +18,7 @@ $ tar -xzvf groundtruth.tar.gz
 ```
 
 ## How to run my code
-In this section, I will show you how to perform tracking with CAT tracker on specific video dataset.
+In this section, I will show you how to perform tracking with CAT tracker on specific video sequence or overall dataset.
 
 ### 1. Install dependent packages
 ```bash
